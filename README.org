@@ -1,0 +1,49 @@
+#+title: cfetch
+
+[[[[https://imgur.com/a/Ae06HD2.png]]]]
+
+A simple, proof-of-concept system fetch utility written mainly as an excercise in C.
+
+It doesn't really fetch too much at all.
+
+It looks quite clean though, and only supports Linux.
+
+Blazingly fast.
+
+** Configuration
+
+Place a config file in `$HOME/.config/cfetch/config`.
+
+*** Example
+
+The colors support values 0-15 (corresponding standard terminal colors). Icons should be single character.
+
+#+begin_src conf
+    frame_color=4
+    os_color=2
+    shell_color=1
+    term_color=14
+    os_icon=
+    shell_icon=
+    term_icon=
+#+end_src
+
+** Usage
+
+#+begin_src
+Usage: cfetch [OPTION...]
+Simple fetch program (that doesn't fetch anything)
+
+  -c, --config=FILE          Config FILE to use
+  -n, --no-config            No config file
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+  -V, --version              Print program version
+#+end_src
+
+** Installation
+
+#+begin_src bash
+make
+sudo make install
+#+end_src
