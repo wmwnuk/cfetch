@@ -107,27 +107,27 @@ int main(int argc, char** argv)
         if (conf != NULL) {
             while (NULL != fgets(line, sizeof(line), conf)) {
                 console_color_t value;
-                char icon[1];
+                static char *os_icon, *shell_icon, *term_icon;
                 if (1 == sscanf(line, "frame_color=%u", &value)) {
-                  config.frame_color = value;
+                    config.frame_color = value;
                 }
                 if (1 == sscanf(line, "os_color=%u", &value)) {
-                  config.os_color = value;
+                    config.os_color = value;
                 }
                 if (1 == sscanf(line, "shell_color=%u", &value)) {
-                  config.shell_color = value;
+                    config.shell_color = value;
                 }
                 if (1 == sscanf(line, "term_color=%u", &value)) {
-                  config.term_color = value;
+                    config.term_color = value;
                 }
-                if (1 == sscanf(line, "os_icon=%s", icon)) {
-                  config.os_icon = icon;
+                if (1 == sscanf(line, "os_icon=%s", os_icon)) {
+                    config.os_icon = os_icon;
                 }
-                if (1 == sscanf(line, "shell_icon=%s", icon)) {
-                  config.shell_icon = icon;
+                if (1 == sscanf(line, "shell_icon=%s", shell_icon)) {
+                    config.shell_icon = shell_icon;
                 }
-                if (1 == sscanf(line, "term_icon=%s", icon)) {
-                  config.term_icon = icon;
+                if (1 == sscanf(line, "term_icon=%s", term_icon)) {
+                    config.term_icon = term_icon;
                 }
             }
         } else if (strlen(arguments.config) > 0) {
