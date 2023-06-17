@@ -5,7 +5,7 @@
 # @version 0.1
 
 all:
-	mkdir build
+	mkdir -p build
 	gcc -o build/cfetch src/cfetch.c
 
 clean:
