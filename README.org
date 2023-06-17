@@ -1,6 +1,6 @@
 #+title: cfetch
 
-[[[[https://imgur.com/a/Ae06HD2.png]]]]
+[[[[https://i.imgur.com/CxbYwny.png]]]]
 
 A simple, proof-of-concept system fetch utility written mainly as an excercise in C.
 
