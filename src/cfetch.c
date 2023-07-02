@@ -31,9 +31,9 @@ struct config {
     console_color_t os_color;
     console_color_t shell_color;
     console_color_t term_color;
-    char* os_icon;
-    char* shell_icon;
-    char* term_icon;
+    char os_icon[10];
+    char shell_icon[10];
+    char term_icon[10];
 };
 
 static void error(const char* msg, const char* msg1)
@@ -96,15 +96,14 @@ int main(int argc, char** argv)
     config.os_color = blue;
     config.shell_color = orange;
     config.term_color = magenta;
-    config.os_icon = "";
-    config.shell_icon = "";
-    config.term_icon = "";
+    strcpy(config.os_icon, "");
+    strcpy(config.shell_icon, "");
+    strcpy(config.term_icon, "");
 
     argp_parse (&argp, argc, argv, 0, 0, &arguments);
 
     if (!arguments.no_config) {
         FILE *conf;
-        char line[1000];
         char errbuf[200];
 
         if (strlen(arguments.config) > 0) {
@@ -150,13 +149,16 @@ int main(int argc, char** argv)
                 toml_datum_t term = toml_string_in(icons, "term");
 
                 if (os.ok) {
-                    config.os_icon = os.u.s;
+                    strcpy(config.os_icon, os.u.s);
+                    FREE(os.u.s);
                 }
                 if (shell.ok) {
-                    config.shell_icon = shell.u.s;
+                    strcpy(config.shell_icon, shell.u.s);
+                    FREE(shell.u.s);
                 }
                 if (term.ok) {
-                    config.term_icon = term.u.s;
+                    strcpy(config.term_icon, term.u.s);
+                    FREE(term.u.s);
                 }
             }
         } else if (strlen(arguments.config) > 0) {
