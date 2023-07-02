@@ -6,8 +6,10 @@
 #include <argp.h>
 #include "drawframe.h"
 #include "consolecolors.h"
+#include "../tomlc99/toml.h"
+#include "../tomlc99/toml.c"
 
-const char *argp_program_version = "cfetch-0.1";
+const char *argp_program_version = "cfetch-0.2";
 const char *argp_program_bug_address = "<laniusone@pm.me>";
 
 static char doc[] = "Simple fetch program (that doesn't fetch anything)";
@@ -34,6 +36,12 @@ struct config {
     char* term_icon;
 };
 
+static void error(const char* msg, const char* msg1)
+{
+    fprintf(stderr, "ERROR: %s%s\n", msg, msg1 ? msg1 : "");
+    exit(EXIT_FAILURE);
+}
+
 static error_t parse_opt (int key, char *arg, struct argp_state *state)
 {
   /* Get the input argument from argp_parse, which we
@@ -52,7 +60,7 @@ static error_t parse_opt (int key, char *arg, struct argp_state *state)
     default:
       return ARGP_ERR_UNKNOWN;
     }
-  return 0;
+  return EXIT_SUCCESS;
 }
 
 static struct argp argp = { options, parse_opt, args_doc, doc };
@@ -97,37 +105,58 @@ int main(int argc, char** argv)
     if (!arguments.no_config) {
         FILE *conf;
         char line[1000];
+        char errbuf[200];
 
         if (strlen(arguments.config) > 0) {
             conf = fopen(arguments.config, "r");
         } else {
-            conf = fopen(strcat(getenv("HOME"), "/.config/cfetch/config"), "r");
+            conf = fopen(strcat(getenv("HOME"), "/.config/cfetch/config.toml"), "r");
         }
 
         if (conf != NULL) {
-            while (NULL != fgets(line, sizeof(line), conf)) {
-                console_color_t value;
-                static char *os_icon, *shell_icon, *term_icon;
-                if (1 == sscanf(line, "frame_color=%u", &value)) {
-                    config.frame_color = value;
+            toml_table_t* config_toml = toml_parse_file(conf, errbuf, sizeof(errbuf));
+            fclose(conf);
+
+            if (!config_toml) {
+                error("Cannot parse - ", errbuf);
+            }
+
+            toml_table_t* colors = toml_table_in(config_toml, "colors");
+            toml_table_t* icons = toml_table_in(config_toml, "icons");
+
+            if (colors) {
+                toml_datum_t frame = toml_int_in(colors, "frame");
+                toml_datum_t os = toml_int_in(colors, "os");
+                toml_datum_t shell = toml_int_in(colors, "shell");
+                toml_datum_t term = toml_int_in(colors, "term");
+
+                if (frame.ok) {
+                    config.frame_color = (int)frame.u.i;
                 }
-                if (1 == sscanf(line, "os_color=%u", &value)) {
-                    config.os_color = value;
+                if (os.ok) {
+                    config.os_color = (int)os.u.i;
                 }
-                if (1 == sscanf(line, "shell_color=%u", &value)) {
-                    config.shell_color = value;
+                if (shell.ok) {
+                    config.shell_color = (int)shell.u.i;
                 }
-                if (1 == sscanf(line, "term_color=%u", &value)) {
-                    config.term_color = value;
+                if (term.ok) {
+                    config.term_color = (int)term.u.i;
                 }
-                if (1 == sscanf(line, "os_icon=%s", os_icon)) {
-                    config.os_icon = os_icon;
+            }
+
+            if (icons) {
+                toml_datum_t os = toml_string_in(icons, "os");
+                toml_datum_t shell = toml_string_in(icons, "shell");
+                toml_datum_t term = toml_string_in(icons, "term");
+
+                if (os.ok) {
+                    config.os_icon = os.u.s;
                 }
-                if (1 == sscanf(line, "shell_icon=%s", shell_icon)) {
-                    config.shell_icon = shell_icon;
+                if (shell.ok) {
+                    config.shell_icon = shell.u.s;
                 }
-                if (1 == sscanf(line, "term_icon=%s", term_icon)) {
-                    config.term_icon = term_icon;
+                if (term.ok) {
+                    config.term_icon = term.u.s;
                 }
             }
         } else if (strlen(arguments.config) > 0) {
@@ -144,16 +173,16 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
     int length = strlen(buf1.release) + strlen(buf1.machine) + 6;
-    char *os = get_os();
+    char *os_name = get_os();
     set_color_output_fg(config.frame_color, normal);
     printf("%s", frame_top_left);
     draw_horizontal_frame(2);
     printf("[");
     reset_color_output();
-    printf("%s", os);
+    printf("%s", os_name);
     set_color_output_fg(config.frame_color, normal);
     printf("]");
-    draw_horizontal_frame(length - strlen(os) - 3);
+    draw_horizontal_frame(length - strlen(os_name) - 3);
     printf("%s", frame_top_right);
     printf("\n");
 

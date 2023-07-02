@@ -10,22 +10,27 @@ It looks quite clean though, and only supports Linux.
 
 Blazingly fast.
 
+Now also configured with TOML.
+
 ** Configuration
 
-Place a config file in `$HOME/.config/cfetch/config`.
+Place a config file in `$HOME/.config/cfetch/config.toml`.
 
 *** Example
 
 The colors support values 0-15 (corresponding standard terminal colors). Icons should be single character.
 
-#+begin_src conf
-    frame_color=4
-    os_color=2
-    shell_color=1
-    term_color=14
-    os_icon=
-    shell_icon=
-    term_icon=
+#+begin_src toml
+[colors]
+    frame = 4
+    os = 2
+    shell = 1
+    term = 14
+
+[icons]
+    os = ""
+    shell = ""
+    term = ""
 #+end_src
 
 ** Usage

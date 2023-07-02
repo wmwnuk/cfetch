@@ -1,0 +1,10 @@
+[colors]
+    frame = 4
+    os = 2
+    shell = 1
+    term = 14
+
+[icons]
+    os = ""
+    shell = ""
+    term = ""
